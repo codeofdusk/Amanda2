@@ -1,9 +1,13 @@
 #Amanda's Wolfram Alpha support, separated into its own module.
 import wolframalpha
 import settings
-w=wolframalpha.Client(settings.wolframkey)
 def query(command):
     "Send a query to Wolfram Alpha."
+    #Is Wolfram enabled?
+    if hasattr(settings,"wolframkey"):
+        w=wolframalpha.Client(settings.wolframkey)
+    else:
+        return "My Wolfram Alpha module has been disabled. If you want to use it, tell my administrator to uncomment wolframkey in settings.py and set my Wolfram Alpha app ID."
     #Wolfram Alpha query
     q=w.query(command)
     #response string
