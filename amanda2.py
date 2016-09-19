@@ -5,9 +5,9 @@ class MySkype(skpy.SkypeEventLoop):
     def onEvent(self,event):
         if isinstance(event,skpy.SkypeNewMessageEvent) and event.msg.chat.id == settings.window:
             #Get the message
-            q=event.msg.content
+            q=str(event.msg.content)
             #Is this a Wolfram command?
-            if hasattr(settings,"wolframkey") and str(q).startswith("?"):
+            if hasattr(settings,"wolframkey") and q.startswith("?"):
                 event.msg.chat.setTyping(active=True)
                 try:
                     return event.msg.chat.sendMsg(wolfram.query(q[1:]))
