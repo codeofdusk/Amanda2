@@ -4,9 +4,9 @@
 #Message Of The Day
 #If Amanda should send a custom message on startup, uncomment the following line and specify your message. Leave commented to send the default message.
     #motd=""
-#Debug
-#Uncomment to print full tracebacks instead of pretty error messages when possible.
-#debug=True
+#Custom Huh Messages
+    #Uncomment and supply a random list of messages to send when Amandadoesn't understand a message.
+#huh_messages=[]
 #Skype settings
 #Does Amanda log into Skype using a Microsoft account?
 microsoft=False
