@@ -12,7 +12,12 @@ class MySkype(skpy.SkypeEventLoop):
                 try:
                     return event.msg.chat.sendMsg(wolfram.query(q[1:]))
                 except:
-                    return event.msg.chat.sendMsg("\"Huh?\" - Ashleah Chamberlain")
+                    #Is debug mode on?
+                    if hasattr(settings,"debug") and settings.debug:
+                        import traceback
+                        return event.msg.chat.sendMsg(traceback.format_exc())
+                    else:
+                        return event.msg.chat.sendMsg("\"Huh?\" - Ashleah Chamberlain")
             #Is this a special command?
 
 if settings.microsoft:
