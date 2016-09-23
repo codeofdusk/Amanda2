@@ -1,4 +1,6 @@
 import skpy
+import dateparser
+from datetime import datetime
 import wolfram
 import settings
 class MySkype(skpy.SkypeEventLoop):
@@ -20,6 +22,25 @@ class MySkype(skpy.SkypeEventLoop):
                 q=q[1:]
                 if q == "lifespan":
                     return event.msg.chat.sendMsg("My time of death has been calculated as " + str(s.conn.tokenExpiry['skype']) + ". At that time, my administrator will need to bring me back to life!")
+                if q.startswith("expire"):
+                    #Split the date string.
+                    qt=q.split(" ")
+                    if len(qt) < 2:
+                        return event.chat.sendMsg("Please specify a time interval!")
+                    datestr=' '.join(qt[1:])
+                    dateobj=dateparser.parse(datestr)
+                    event.msg.chat.sendMsg("Topic set to expire on " + str(dateobj) + ". If this looks okay, you can continue implementing this feature!")
+                    self.temp_topic=event.msg.chat.topic
+                    self.topic_expiry=dateobj
+    def cycle(self):
+        skpy.SkypeEventLoop.cycle(self)
+        if hasattr(self,'temp_topic') and hasattr(self,'topic_expiry') and self.chats[settings.window].topic == self.temp_topic and datetime.now() > self.topic_expiry:
+            if hasattr(settings,'default_topic'):
+                self.chats[settings.window].setTopic(settings.default_topic)
+            else:
+                self.chats[settings.window].setTopic("Hangin' in Suspense")
+            self.temp_topic=''
+
 if settings.microsoft:
     raise NotImplementedError
 else:

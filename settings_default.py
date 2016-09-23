@@ -16,7 +16,8 @@ skypeuser=""
 skypepass=""
 #Skype cloud identifier of the window where Amanda resides.
 window=""
-
+#When using Skype topic expiry, the topic Amanda should set when the current one expires (leave commented to use the default).
+#defaulttopic = ""
 #Wolfram Alpha
 #To enable Wolfram Alpha support, uncomment the following line and specify Amanda's Wolfram Alpha app ID.
 #wolframkey=""
