@@ -29,6 +29,8 @@ class MySkype(skpy.SkypeEventLoop):
                         return event.chat.sendMsg("Please specify a time interval!")
                     datestr=' '.join(qt[1:])
                     dateobj=dateparser.parse(datestr)
+                    if dateobj == None:
+                        return event.msg.chat.sendMsg("Invalid expiration date.")
                     event.msg.chat.sendMsg("Topic set to expire on " + str(dateobj) + ". If this looks okay, you can continue implementing this feature!")
                     self.temp_topic=event.msg.chat.topic
                     self.topic_expiry=dateobj
