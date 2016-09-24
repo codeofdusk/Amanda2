@@ -31,17 +31,18 @@ class MySkype(skpy.SkypeEventLoop):
                     dateobj=dateparser.parse(datestr)
                     if dateobj == None:
                         return event.msg.chat.sendMsg("Invalid expiration date.")
-                    event.msg.chat.sendMsg("Topic set to expire on " + str(dateobj) + ". If this looks okay, you can continue implementing this feature!")
+                    event.msg.chat.sendMsg("Topic set to expire on " + str(dateobj) + ".")
                     self.temp_topic=event.msg.chat.topic
                     self.topic_expiry=dateobj
     def cycle(self):
         skpy.SkypeEventLoop.cycle(self)
-        if hasattr(self,'temp_topic') and hasattr(self,'topic_expiry') and self.chats[settings.window].topic == self.temp_topic and datetime.now() > self.topic_expiry:
+        if hasattr(self,'temp_topic') and self.temp_topic != None and hasattr(self,'topic_expiry') and self.topic_expiry != None and self.chats[settings.window].topic == self.temp_topic and datetime.now() > self.topic_expiry:
             if hasattr(settings,'default_topic'):
                 self.chats[settings.window].setTopic(settings.default_topic)
             else:
                 self.chats[settings.window].setTopic("Hangin' in Suspense")
-            self.temp_topic=''
+            self.temp_topic=None
+            self.topic_expiry=None
 
 if settings.microsoft:
     raise NotImplementedError
