@@ -36,6 +36,7 @@ class MySkype(skpy.SkypeEventLoop):
                     self.topic_expiry=dateobj
     def cycle(self):
         skpy.SkypeEventLoop.cycle(self)
+        #Known bug: topic expiry doesn't work unless system time is in UTC
         if hasattr(self,'temp_topic') and self.temp_topic != None and hasattr(self,'topic_expiry') and self.topic_expiry != None and self.chats[settings.window].topic == self.temp_topic and datetime.now() > self.topic_expiry:
             if hasattr(settings,'default_topic'):
                 self.chats[settings.window].setTopic(settings.default_topic)
