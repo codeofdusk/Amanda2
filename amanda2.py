@@ -2,6 +2,7 @@ import skpy
 import dateparser
 from datetime import datetime
 import wolfram
+import geo
 import settings
 class MySkype(skpy.SkypeEventLoop):
     def onEvent(self,event):
@@ -26,7 +27,7 @@ class MySkype(skpy.SkypeEventLoop):
                     #Split the date string.
                     qt=q.split(" ")
                     if len(qt) < 2:
-                        return event.chat.sendMsg("Please specify a time interval!")
+                        return event.msg.chat.sendMsg("Please specify a time interval!")
                     datestr=' '.join(qt[1:])
                     dateobj=dateparser.parse(datestr)
                     if dateobj == None:
@@ -34,6 +35,9 @@ class MySkype(skpy.SkypeEventLoop):
                     event.msg.chat.sendMsg("Topic set to expire on " + str(dateobj) + ".")
                     self.temp_topic=event.msg.chat.topic
                     self.topic_expiry=dateobj
+                if q.startswith("geo"):
+                    if len(q.split(" ")) != 2: return event.msg.chat.sendMsg("Usage: !geo <hostname or IP>")
+                    else: return event.msg.chat.sendMsg(geo.as_string(geo.lookup(q.split(" ")[1])))
     def cycle(self):
         skpy.SkypeEventLoop.cycle(self)
         #Known bug: topic expiry doesn't work unless system time is in UTC
