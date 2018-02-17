@@ -1,5 +1,15 @@
 import skpy
 import settings
+import random
+def respond(response):
+    if response:
+        return response
+    else:
+        # do we have huh messages?
+        if hasattr(settings,'huh_messages'):
+            return random.choice(settings.huh_messages)
+        else:
+            return "I don't understand."
 class MySkype(skpy.SkypeEventLoop):
     def onEvent(self,event):
         if isinstance(event,skpy.SkypeNewMessageEvent) and event.msg.chat.id == settings.window:
@@ -16,8 +26,8 @@ class MySkype(skpy.SkypeEventLoop):
                     for plugin in settings.plugins:
                         if hasattr(plugin,'name') and plugin.name.lower() == pn.lower():
                             event.msg.chat.setTyping(active=True)
-                            return event.msg.chat.sendMsg(plugin.run(pa,explicit=True))
-                    return event.msg.chat.sendMsg("Invalid command.")
+                            return event.msg.chat.sendMsg(respond(plugin.run(pa,explicit=True)))
+                    return event.msg.chat.sendMsg(respond(False))
                 # Attempt to call plugin implicitly
                 if hasattr(settings,'allow_implicit') and settings.allow_implicit:
                     for plugin in settings.plugins:
@@ -25,7 +35,7 @@ class MySkype(skpy.SkypeEventLoop):
                             m = plugin.match(q)
                             if m:
                                 event.msg.chat.setTyping(active=True)
-                                return event.msg.chat.sendMsg(plugin.run(m))
+                                return event.msg.chat.sendMsg(respond(plugin.run(m)))
             except:
                 import traceback
                 return event.msg.chat.sendMsg(traceback.format_exc())
