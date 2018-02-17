@@ -1,8 +1,4 @@
 import skpy
-import dateparser
-from datetime import datetime
-import wolfram
-import geo
 import settings
 class MySkype(skpy.SkypeEventLoop):
     def onEvent(self,event):
