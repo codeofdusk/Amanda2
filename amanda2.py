@@ -14,7 +14,7 @@ class MySkype(skpy.SkypeEventLoop):
                     pa=' '.join(qt[1:])
                     # Search for the plugin
                     for plugin in settings.plugins:
-                        if hasattr(plugin,'name') and plugin.name == pn:
+                        if hasattr(plugin,'name') and plugin.name.lower() == pn.lower():
                             event.msg.chat.setTyping(active=True)
                             return event.msg.chat.sendMsg(plugin.run(pa,explicit=True))
                     return event.msg.chat.sendMsg("Invalid command.")
