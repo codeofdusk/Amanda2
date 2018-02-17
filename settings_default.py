@@ -1,5 +1,10 @@
 #Amanda settings file
 #Before using Amanda, fill in these settings, then copy this file to settings.py.
+# Imports.
+# If you wish to use the geolocation plugin, you will need to install the requests package from PyPI. Once installed, uncomment the following line as well as the line in the plugins section.
+#from plugins import geo
+# If you wish to use Wolfram Alpha, you will need to install the wolframalpha package from PyPI and obtain an API key. Once you have a key and have installed the required package, uncomment this line and the one in the plugins section, then add your API key where required.
+#from plugins import wolframalpha
 #General settings
 #Message Of The Day
 #If Amanda should send a custom message on startup, uncomment the following line and specify your message. Leave commented to send the default message.
@@ -23,7 +28,10 @@ window=""
 # Plugins
 # Plugins add functionality to Amanda. They can be enabled and configured here.
 plugins=[
-
+# Uncomment the below line to enable the IP geolocation plugin.
+#geo.GeolocationPlugin()
+# Uncomment the below line and add your API key between the quotation marks to enable Wolfram Alpha.
+#wolfram.WolframAlphaPlugin("")
 ]
 
 # Advanced options
