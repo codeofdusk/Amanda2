@@ -10,10 +10,11 @@ def build_startup_message():
     else:
         startstr="I Am Completely Operational, And All My Circuits Are Functioning Perfectly!"
     # Advertise enabled plugins
-    if hasattr(settings,'advertise_plugins') and settings.advertise_plugins:
+    if hasattr(settings,'advertise_plugins'):
         for plugin in settings.plugins:
-            if hasattr(plugin,'ad'):
-                startstr+=" " + plugin.ad
+            if plugin.name in settings.advertise_plugins or len(settings.advertise_plugins) < 1:
+                if hasattr(plugin,'ad'):
+                    startstr+=" " + plugin.ad
     return startstr
 
 if __name__ == '__main__':

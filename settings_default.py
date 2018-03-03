@@ -13,8 +13,8 @@
 #Uncomment and supply a random list of messages to send when Amanda doesn't understand a message.
 #huh_messages=[]
 # Plugin advertisement
-# Comment out (or set to false) the following line to disable advertisement of enabled plugins (using text supplied with each plugin) when Amanda starts. If you have enabled a large number of plugins, disabling this advertisement may be a good idea to avoid sending a large message on startup.
-advertise_plugins=True
+# Enter the names of plugins to advertise into the below list, leave empty to advertise all, or comment out to disable advertisement.
+advertise_plugins=[]
 #Skype settings
 #Does Amanda log into Skype using a Microsoft account?
 microsoft=False
