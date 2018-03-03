@@ -12,7 +12,7 @@ class request(object):
         try:
             # First attempt to call plugin explicitly
             if hasattr(settings,'allow_explicit') and settings.allow_explicit and self.content.startswith("!"):
-                self.accepted=True
+                self.accept()
                 # Get the plugin name and args
                 qt=self.content[1:].split(" ")
                 pn=qt[0]
@@ -27,11 +27,13 @@ class request(object):
                     if hasattr(plugin,'match'):
                         m = plugin.match(self.content)
                         if m:
-                            self.accepted=True
+                            self.accept()
                             self.response = plugin.run(m)
         except:
             import traceback
             self.response = traceback.format_exc()
+        finally:
+            self.finalize()
     def __str__(self):
         if self.response:
             return self.response
@@ -41,6 +43,15 @@ class request(object):
                 return random.choice(settings.huh_messages)
             else:
                 return "I don't understand."
+        def accept(self):
+            if hasattr(self.driver,'working'):
+                self.driver.working(True,request=self)
+            self.accepted=True
+        def finalize(self):
+            if hasattr(self.driver,'say'):
+                self.driver.say(str(self),request=self)
+            if hasattr(self.driver,'working'):
+                self.driver.working(False,request=self)
 class MySkype(skpy.SkypeEventLoop):
     def onEvent(self,event):
         if isinstance(event,skpy.SkypeNewMessageEvent) and event.msg.chat.id == settings.window:
