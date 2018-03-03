@@ -35,23 +35,22 @@ class request(object):
         finally:
             self.finalize()
     def __str__(self):
-        if self.response:
-            return self.response
-        else:
+        if not self.response:
             # do we have huh messages?
             if hasattr(settings,'huh_messages'):
-                return random.choice(settings.huh_messages)
+                self.response = random.choice(settings.huh_messages)
             else:
-                return "I don't understand."
-        def accept(self):
-            if hasattr(self.driver,'working'):
-                self.driver.working(True,request=self)
-            self.accepted=True
-        def finalize(self):
-            if hasattr(self.driver,'say'):
-                self.driver.say(str(self),request=self)
-            if hasattr(self.driver,'working'):
-                self.driver.working(False,request=self)
+                self.response = "I don't understand."
+        return self.response
+    def accept(self):
+        if hasattr(self.driver,'working'):
+            self.driver.working(True,request=self)
+        self.accepted=True
+    def finalize(self):
+        if hasattr(self.driver,'say'):
+            self.driver.say(str(self),request=self)
+        if hasattr(self.driver,'working'):
+            self.driver.working(False,request=self)
 class MySkype(skpy.SkypeEventLoop):
     def onEvent(self,event):
         if isinstance(event,skpy.SkypeNewMessageEvent) and event.msg.chat.id == settings.window:
@@ -61,20 +60,21 @@ class MySkype(skpy.SkypeEventLoop):
             if r.accepted:
                 return event.msg.chat.sendMsg(str(r))
 
-if settings.microsoft:
-    raise NotImplementedError
-s=MySkype(settings.skypeuser,settings.skypepass,autoAck=True)
-#build the startup string.
-#Do we have a message of the day?
-if hasattr(settings,"motd"):
-    startstr=settings.motd
-else:
-    startstr="I Am Completely Operational, And All My Circuits Are Functioning Perfectly!"
-# Advertise enabled plugins
-if hasattr(settings,'advertise_plugins') and settings.advertise_plugins:
-    for plugin in settings.plugins:
-        if hasattr(plugin,'ad'):
-            startstr+=" " + plugin.ad
-#Send it out.
-s.chats[settings.window].sendMsg(startstr.strip())
-s.loop()
+if __name__ == '__main__':
+    if settings.microsoft:
+        raise NotImplementedError
+    s=MySkype(settings.skypeuser,settings.skypepass,autoAck=True)
+    #build the startup string.
+    #Do we have a message of the day?
+    if hasattr(settings,"motd"):
+        startstr=settings.motd
+    else:
+        startstr="I Am Completely Operational, And All My Circuits Are Functioning Perfectly!"
+    # Advertise enabled plugins
+    if hasattr(settings,'advertise_plugins') and settings.advertise_plugins:
+        for plugin in settings.plugins:
+            if hasattr(plugin,'ad'):
+                startstr+=" " + plugin.ad
+        #Send it out.
+        s.chats[settings.window].sendMsg(startstr.strip())
+        s.loop()
