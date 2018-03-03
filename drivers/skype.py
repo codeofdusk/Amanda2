@@ -3,13 +3,19 @@ import skpy
 imp.load_source('request', os.path.join(os.path.dirname(__file__), '../request.py'))
 from request import request
 class SkypeDriver(skpy.SkypeEventLoop):
-    def __init__(self, user=None, pwd=None, tokenFile=None, autoAck=True, status=None, window=None):
+    def __init__(self, user=None, pwd=None, tokenFile=None, autoAck=True, status="default", window=None):
         "Initialize the user-facing Skype driver."
         # Initialize the internal-use (real) Skype driver
         self._driver=_driver(self)
         if window:
             # We have a window
             self.window=window
+            if status == "default":
+                status=None
+        else:
+            self.window=None
+            if status == "default":
+                status=skpy.util.SkypeUtils.Status.Online
         super().__init__(user=user, pwd=pwd, tokenFile=tokenFile, autoAck=autoAck, status=status)
     def onEvent(self,event):
         if isinstance(event,skpy.SkypeNewMessageEvent) and (not self.window or event.msg.chat.id == self.window):
@@ -36,10 +42,12 @@ class _driver(object):
     def say(self,msg,request=None,*args,**kwargs):
         if hasattr(request,'kwargs') and 'event' in request.kwargs:
             request.kwargs['event'].msg.chat.sendMsg(msg)
-        elif hasattr(self._skype,'window'):
+        elif self._skype.window:
             self._skype.chats[self._skype.window].sendMsg(msg)
         else:
             print("Warning! Skype message destined for nowhere. Please set a window if you wish to use this plugin: " + msg)
-    def announce(self,*args,**kwargs):
-        #For now
-        return self.say(*args,**kwargs)
+    def announce(self,msg):
+        if self._skype.window:
+            return self.say(msg,request=None)
+        else:
+            self._skype.setMood(msg)
