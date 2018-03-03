@@ -1,44 +1,54 @@
 import skpy
 import settings
 import random
-def respond(response):
-    if response:
-        return response
-    else:
-        # do we have huh messages?
-        if hasattr(settings,'huh_messages'):
-            return random.choice(settings.huh_messages)
+
+class request(object):
+    def __init__(self,content,driver=None,*args,**kwargs):
+        "Take a string and return a response (if available) or False for no response."
+        self.content=content
+        self.driver=driver
+        self.accepted=False
+        self.response=None
+        try:
+            # First attempt to call plugin explicitly
+            if hasattr(settings,'allow_explicit') and settings.allow_explicit and self.content.startswith("!"):
+                self.accepted=True
+                # Get the plugin name and args
+                qt=self.content[1:].split(" ")
+                pn=qt[0]
+                pa=' '.join(qt[1:])
+                # Search for the plugin
+                for plugin in settings.plugins:
+                    if hasattr(plugin,'name') and plugin.name.lower() == pn.lower():
+                        self.response = plugin.run(pa,explicit=True)
+            # Attempt to call plugin implicitly
+            if hasattr(settings,'allow_implicit') and settings.allow_implicit:
+                for plugin in settings.plugins:
+                    if hasattr(plugin,'match'):
+                        m = plugin.match(self.content)
+                        if m:
+                            self.accepted=True
+                            self.response = plugin.run(m)
+        except:
+            import traceback
+            self.response = traceback.format_exc()
+    def __str__(self):
+        if self.response:
+            return self.response
         else:
-            return "I don't understand."
+            # do we have huh messages?
+            if hasattr(settings,'huh_messages'):
+                return random.choice(settings.huh_messages)
+            else:
+                return "I don't understand."
 class MySkype(skpy.SkypeEventLoop):
     def onEvent(self,event):
         if isinstance(event,skpy.SkypeNewMessageEvent) and event.msg.chat.id == settings.window:
             #Get the message
             q=str(event.msg.content)
-            try:
-                # First attempt to call plugin explicitly
-                if hasattr(settings,'allow_explicit') and settings.allow_explicit and q.startswith("!"):
-                    # Get the plugin name and args
-                    qt=q[1:].split(" ")
-                    pn=qt[0]
-                    pa=' '.join(qt[1:])
-                    # Search for the plugin
-                    for plugin in settings.plugins:
-                        if hasattr(plugin,'name') and plugin.name.lower() == pn.lower():
-                            event.msg.chat.setTyping(active=True)
-                            return event.msg.chat.sendMsg(respond(plugin.run(pa,explicit=True)))
-                    return event.msg.chat.sendMsg(respond(False))
-                # Attempt to call plugin implicitly
-                if hasattr(settings,'allow_implicit') and settings.allow_implicit:
-                    for plugin in settings.plugins:
-                        if hasattr(plugin,'match'):
-                            m = plugin.match(q)
-                            if m:
-                                event.msg.chat.setTyping(active=True)
-                                return event.msg.chat.sendMsg(respond(plugin.run(m)))
-            except:
-                import traceback
-                return event.msg.chat.sendMsg(traceback.format_exc())
+            r=request(q)
+            if r.accepted:
+                return event.msg.chat.sendMsg(str(r))
 
 if settings.microsoft:
     raise NotImplementedError
