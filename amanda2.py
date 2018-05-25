@@ -14,7 +14,7 @@ users or through newly-initialized drivers."""
     if config.conf['general']['motd']:
         startstr = config.conf['general']['motd']
     else:
-        startstr = "I Am Completely Operational, And All My Circuits Are Functioning Perfectly!"
+        startstr = "I am completely operational, and all my circuits are functioning perfectly!"
     # Advertise enabled plugins
     if config.conf['general']['sendmotd'] == 'full':
         for plugin in settings.plugins:
