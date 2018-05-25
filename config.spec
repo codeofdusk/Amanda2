@@ -3,9 +3,9 @@
 
 [general]
 # Should Amanda send a message on startup?
-# Set to off to send no message, brief to send a message without usage details for installed plugins, or full to send a message including plugin advertisements.
+# Set to None to send no message, brief to send a message without usage details for installed plugins, or full to send a message including plugin advertisements.
 # Note: the brief option is recommended for protocols where message length is limited (Skype with no window specified, etc). Full is recommended otherwise, unless a large number of plugins is enabled.
-sendmotd=option('off','brief','full',default='brief')
+sendmotd=option(None,'brief','full',default='brief')
 # The text of the message to send when Amanda starts. If not set, the default text will be used.
 motd=string(default=None)
 # Huh messages

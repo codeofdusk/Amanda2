@@ -8,7 +8,7 @@ def build_startup_message():
     """Build the startup string, an announcement sent to newly-connected
 users or through newly-initialized drivers."""
     # Is the message enabled?
-    if config.conf['general']['sendmotd'] == 'off':
+    if not config.conf['general']['sendmotd']:
         return None
     # Do we have a message of the day?
     if config.conf['general']['motd']:
