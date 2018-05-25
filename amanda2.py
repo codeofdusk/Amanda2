@@ -1,27 +1,31 @@
 "Amanda's main module and the entry point for the program."
 from threading import Thread
 import settings
+import config
 
 
 def build_startup_message():
     """Build the startup string, an announcement sent to newly-connected
 users or through newly-initialized drivers."""
+    # Is the message enabled?
+    if config.conf['general']['sendmotd'] == 'off':
+        return None
     # Do we have a message of the day?
-    if hasattr(settings, "motd"):
-        startstr = settings.motd
+    if config.conf['general']['motd']:
+        startstr = config.conf['general']['motd']
     else:
         startstr = "I Am Completely Operational, And All My Circuits Are Functioning Perfectly!"
     # Advertise enabled plugins
-    if hasattr(settings, 'advertise_plugins'):
+    if config.conf['general']['sendmotd'] == 'full':
         for plugin in settings.plugins:
-            if plugin.name in settings.advertise_plugins or len(
-                    settings.advertise_plugins) < 1:
-                if hasattr(plugin, 'ad'):
-                    startstr += " " + plugin.ad
+            if hasattr(plugin, 'ad'):
+                startstr += " " + plugin.ad
     return startstr
 
 
 if __name__ == '__main__':
+    # Prepare config
+    config.load()
     # Start all drivers
     if not hasattr(settings, 'drivers') or len(settings.drivers) < 1:
         raise ValueError("You must configure at least one driver.")
@@ -29,5 +33,5 @@ if __name__ == '__main__':
     SS = build_startup_message()
     for driver in settings.drivers:
         Thread(target=driver.run).start()
-        if hasattr(driver, 'announce'):
+        if hasattr(driver, 'announce') and SS is not None:
             driver.announce(SS)

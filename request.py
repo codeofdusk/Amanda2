@@ -1,10 +1,12 @@
 "Contains the Request class."
 import random
 import settings
+import config
 
 
 class request(object):
     "Contains attributes for handling user requests and returning responses. Instantiate this class to make a request."
+
     def __init__(self, content, driver=None, *args, **kwargs):
         "Take a string and return a response (if available) or False for no response."
         self.content = content
@@ -16,9 +18,8 @@ class request(object):
         self.kwargs = kwargs
         try:
             # First attempt to call plugin explicitly
-            if hasattr(
-                    settings,
-                    'allow_explicit') and settings.allow_explicit and self.content.startswith("!"):
+            if config.conf['advanced']['allow_explicit'] and self.content.startswith(
+                    "!"):
                 self.accept()
                 # Get the plugin name and args
                 qt = self.content[1:].split(" ")
@@ -30,7 +31,7 @@ class request(object):
                                'name') and plugin.name.lower() == pn.lower():
                         self.response = plugin.run(pa, explicit=True)
             # Attempt to call plugin implicitly
-            if hasattr(settings, 'allow_implicit') and settings.allow_implicit:
+            if config.conf['advanced']['allow_implicit']:
                 for plugin in settings.plugins:
                     if hasattr(plugin, 'match'):
                         m = plugin.match(self.content)
@@ -46,8 +47,9 @@ class request(object):
     def __str__(self):
         if not self.response:
             # do we have huh messages?
-            if hasattr(settings, 'huh_messages'):
-                self.response = random.choice(settings.huh_messages)
+            if config.conf['general']['huh_messages']:
+                self.response = random.choice(
+                    config.conf['general']['huh_messages'])
             else:
                 self.response = "I don't understand."
         return self.response
