@@ -1,6 +1,6 @@
 "Contains the Request class."
 import random
-import settings
+import components
 import config
 
 
@@ -26,13 +26,13 @@ class request(object):
                 pn = qt[0]
                 pa = ' '.join(qt[1:])
                 # Search for the plugin
-                for plugin in settings.plugins:
+                for plugin in components.plugins:
                     if hasattr(plugin,
                                'name') and plugin.name.lower() == pn.lower():
                         self.response = plugin.run(pa, explicit=True)
             # Attempt to call plugin implicitly
             if config.conf['advanced']['allow_implicit']:
-                for plugin in settings.plugins:
+                for plugin in components.plugins:
                     if hasattr(plugin, 'match'):
                         m = plugin.match(self.content)
                         if m:

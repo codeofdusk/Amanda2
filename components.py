@@ -74,11 +74,12 @@ def _loadtype(type, basepath):
 
 
 def load(basepath=None):
-    "Instantiates plugins and drivers based on user configuration. If basepath is specified, that directory will be searched for components, otherwise the current directory will be searched."
+    "Instantiates plugins and drivers based on user configuration. If basepath is specified, that directory will be searched for components, otherwise the current directory will be searched. Returns the result of _discover for (True if new plugins, drivers, or both have been discovered)."
     global plugins, drivers
     if basepath is None:
         basepath = ''
-    _discover('driver', basepath=basepath)
+    newd = _discover('driver', basepath=basepath)
     drivers = _loadtype('driver', basepath)
-    _discover('plugin', basepath=basepath)
+    newp = _discover('plugin', basepath=basepath)
     plugins = _loadtype('plugin', basepath)
+    return newd or newp

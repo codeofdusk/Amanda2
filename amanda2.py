@@ -1,6 +1,6 @@
 "Amanda's main module and the entry point for the program."
 from threading import Thread
-import settings
+import components
 import config
 
 
@@ -17,7 +17,7 @@ users or through newly-initialized drivers."""
         startstr = "I am completely operational, and all my circuits are functioning perfectly!"
     # Advertise enabled plugins
     if config.conf['general']['sendmotd'] == 'full':
-        for plugin in settings.plugins:
+        for plugin in components.plugins:
             if hasattr(plugin, 'ad'):
                 startstr += " " + plugin.ad
     return startstr
@@ -26,12 +26,15 @@ users or through newly-initialized drivers."""
 if __name__ == '__main__':
     # Prepare config
     config.load()
+    # Instantiate components
+    if components.load():
+        print("New plugins and/or drivers have been discovered! Edit the configuration file to enable or customize them.")
     # Start all drivers
-    if not hasattr(settings, 'drivers') or len(settings.drivers) < 1:
+    if not hasattr(components, 'drivers') or len(components.drivers) < 1:
         raise ValueError("You must configure at least one driver.")
     # Build the startup string
     SS = build_startup_message()
-    for driver in settings.drivers:
+    for driver in components.drivers:
         Thread(target=driver.run).start()
         if hasattr(driver, 'announce') and SS is not None:
             driver.announce(SS)
