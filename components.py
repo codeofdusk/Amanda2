@@ -60,7 +60,8 @@ def _loadtype(type, basepath):
     for mod in mods:
         b = None
         for name, obj in mod.__dict__.items():
-            if name == "Base" + type.capitalize():
+            s = "Base" + type.capitalize()
+            if name == type+"s." + s or name == s:
                 b = obj
             if hasattr(obj, "__bases__") and b in obj.__bases__:
                 # Instantiate the component, passing all config options (except

@@ -1,4 +1,4 @@
-from .BasePlugin import BasePlugin
+from plugins.BasePlugin import BasePlugin
 import wolframalpha
 
 
