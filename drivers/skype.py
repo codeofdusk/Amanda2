@@ -1,8 +1,8 @@
 import skpy
 from request import request
+from .BaseDriver import BaseDriver
 
-
-class SkypeDriver(skpy.SkypeEventLoop):
+class SkypeDriver(BaseDriver,skpy.SkypeEventLoop):
     def __init__(
             self,
             user=None,
