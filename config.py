@@ -20,6 +20,7 @@ def load(path="amanda2.conf", specpath="config.spec"):
     elif new:
         conf.write()
         print(
-            "This appears to be the first time you have run Amanda on this system. A default configuration file has been written to " +
-            path +
-            ". Please edit it for your use case and re-run Amanda when finished.")
+            "This appears to be the first time you have run Amanda on this system. A default configuration file has been written to "
+            + path +
+            ". Please edit it for your use case and re-run Amanda when finished."
+        )

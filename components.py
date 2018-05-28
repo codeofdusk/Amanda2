@@ -37,8 +37,8 @@ def _import(path):
     p = os.path.split(path)
     packagename = os.path.basename(p[0])
     modname = os.path.splitext(p[1])[0]
-    spec = importlib.util.spec_from_file_location(
-        packagename + "." + modname, path)
+    spec = importlib.util.spec_from_file_location(packagename + "." + modname,
+                                                  path)
     res = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(res)
     return res
@@ -50,8 +50,10 @@ def _loadtype(type, basepath):
     c = config.conf[type + 's']
     disc = c.sections
     # Get the list of enabled components.
-    enabled = [i for i in disc if c[i].as_bool(
-        'enabled') and c[i] != 'Base' + type.capitalize()]
+    enabled = [
+        i for i in disc
+        if c[i].as_bool('enabled') and c[i] != 'Base' + type.capitalize()
+    ]
     # Get a list of paths
     paths = [os.path.join(basepath, type + "s", i + ".py") for i in enabled]
     # Import and instantiate
@@ -67,8 +69,8 @@ def _loadtype(type, basepath):
             if hasattr(obj, "__bases__") and b in obj.__bases__:
                 # Instantiate the component, passing all config options (except
                 # enabled) as kwargs.
-                kwargs = dict(
-                    config.conf[type + 's'][os.path.splitext(os.path.basename(mod.__file__))[0]])
+                kwargs = dict(config.conf[type + 's'][os.path.splitext(
+                    os.path.basename(mod.__file__))[0]])
                 del kwargs['enabled']
                 inst = obj(**kwargs)
                 res.append(inst)

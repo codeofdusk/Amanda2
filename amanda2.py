@@ -28,7 +28,9 @@ if __name__ == '__main__':
     config.load()
     # Instantiate components
     if components.load():
-        print("New plugins and/or drivers have been discovered! Edit the configuration file to enable or customize them.")
+        print(
+            "New plugins and/or drivers have been discovered! Edit the configuration file to enable or customize them."
+        )
     # Start all drivers
     if not hasattr(components, 'drivers') or len(components.drivers) < 1:
         raise ValueError("You must configure at least one driver.")
