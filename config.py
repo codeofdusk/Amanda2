@@ -5,9 +5,8 @@ import configobj
 from validate import Validator
 
 conf = None
-configured = None
 val = Validator()
-
+new=None
 
 def load(path="amanda2.conf", specpath="config.spec"):
     "Loads and validates user configuration. Populates the module-level conf variable for use in other parts of the program and does not return."
