@@ -8,30 +8,6 @@ plugins = []
 drivers = []
 
 
-def _discover(type, basepath=None):
-    "An internal use function to discover Amanda components and add config sections where required. If basepath is specified, that path is searched for source files, otherwise the default path is used. Returns True if new components are discovered, False otherwise."
-    path = os.path.join(basepath, type + "s")
-    t = []
-    for i in os.listdir(path):
-        p = os.path.splitext(i)
-        if p[1] == '.py' and p[0] != '__init__' and p[0] != 'Base' + \
-                type.capitalize():
-            t.append(p[0])
-    if type + "s" not in config.conf:
-        config.conf[type + "s"] = {}
-    s = config.conf[type + "s"]
-    # Get the return value
-    new = s.sections != t
-    # Add new sections if needed
-    if new:
-        for i in t:
-            if i not in s:
-                s[i] = {'enabled': False}
-        # Write new config to disk
-        config.conf.write()
-    return new
-
-
 def _import(path):
     "Imports and returns the module from the given path."
     p = os.path.split(path)
@@ -42,6 +18,18 @@ def _import(path):
     res = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(res)
     return res
+
+
+def _discover(type, basepath):
+    "An internal use function to discover Amanda components and import the modules that contain them. If basepath is specified, that path is searched for source files, otherwise the default path is used. Returns a list of modules containing components of the given type."
+    path = os.path.join(basepath, type + "s")
+    t = []
+    for i in os.listdir(path):
+        p = os.path.splitext(i)
+        if p[1] == '.py' and p[0] != '__init__' and p[0] != \
+                'Base' + type.capitalize():
+            t.append(os.path.join(path, i))
+    return [_import(i) for i in t]
 
 
 def _loadtype(type, basepath):
