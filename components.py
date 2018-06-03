@@ -4,6 +4,7 @@ import os
 import importlib
 import configobj
 import config
+import collections
 
 plugins = []
 drivers = []
@@ -38,6 +39,32 @@ def _get_short_name(m):
     return m.__name__.split(".")[-1]
 
 
+def _merge(base, indict, decoupled=False):
+    "A patched version of configobj.section.merge which also copies comments. Waiting for this to be merged upstream."
+    for key, val in list(indict.items()):
+        if decoupled:
+            val = copy.deepcopy(val)
+        if (key in base and isinstance(base[key], collections.Mapping)
+                and isinstance(val, collections.Mapping)):
+            _merge(base[key], val, decoupled=decoupled)
+            if hasattr(val, 'comments') and isinstance(val.comments,
+                                                       collections.Mapping):
+                base[key].comments.update(val.comments)
+            if hasattr(val, 'inline_comments') and isinstance(
+                    val.inline_comments, collections.Mapping):
+                base[key].inline_comments.update(val.inline_comments)
+        else:
+            base[key] = val
+        if hasattr(indict, 'comments') and isinstance(
+                indict.comments, collections.Mapping
+        ) and key in indict.comments and key not in base.comments:
+            base.comments[key] = indict.comments[key]
+        if hasattr(indict, 'inline_comments') and isinstance(
+                indict.inline_comments, collections.Mapping
+        ) and key in indict.inline_comments and key not in base.inline_comments:
+            base.inline_comments[key] = indict.inline_comments[key]
+
+
 def _configure(type, discovered):
     "Updates user configuration based on discovered components."
     if type + "s" not in config.conf:
@@ -66,7 +93,7 @@ def _configure(type, discovered):
         # Always supply enabled and set to False to prevent components from overriding.
         compsec['enabled'] = 'boolean(default=False)'
         # All checks passed, so merge the component spec and user config spec.
-        config.conf.configspec.merge(spec)
+        _merge(config.conf.configspec, spec)
 
 
 def _loadtype(type, basepath, discovered=None):
@@ -105,10 +132,6 @@ def load(basepath=None):
     global plugins, drivers
     if basepath is None:
         basepath = ''
-    if 'drivers' not in config.conf:
-        config.conf['drivers'] = {}
-    if 'plugins' not in config.conf:
-        config.conf['plugins'] = {}
     # Store the length of the root type sections to allow for auto-detection.
     driverconf = config.conf["drivers"]
     beforedrivers = len(driverconf)

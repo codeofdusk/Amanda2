@@ -1,6 +1,12 @@
 from plugins.BasePlugin import BasePlugin
 import wolframalpha
 
+configspec = (
+    "[plugins]", "# Wolfram Alpha",
+    "# This plugin returns responses from the Wolfram Alpha knowledge engine.",
+    "# The wolframalpha package from PyPI and a Wolfram Alpha API key are required.",
+    "[[wolfram]]", "enabled=boolean(default=False)", "key=string(default='')")
+
 
 class WolframAlphaPlugin(BasePlugin):
     name = "wolfram"
