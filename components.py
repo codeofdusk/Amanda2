@@ -67,11 +67,6 @@ def _configure(type, discovered):
         compsec['enabled'] = 'boolean(default=False)'
         # All checks passed, so merge the component spec and user config spec.
         config.conf.configspec.merge(spec)
-    # Store the length of the root type section so we know if there are any new components.
-    rootsection = config.conf[type + "s"]
-    before = len(rootsection)
-    config.validate_config()
-    return before != len(rootsection)
 
 
 def _loadtype(type, basepath, discovered=None):
@@ -110,8 +105,18 @@ def load(basepath=None):
     global plugins, drivers
     if basepath is None:
         basepath = ''
-    newd = _configure('driver', _discover('driver', basepath=basepath))
+    if 'drivers' not in config.conf:
+        config.conf['drivers'] = {}
+    if 'plugins' not in config.conf:
+        config.conf['plugins'] = {}
+    # Store the length of the root type sections to allow for auto-detection.
+    driverconf = config.conf["drivers"]
+    beforedrivers = len(driverconf)
+    pluginconf = config.conf["plugins"]
+    beforeplugins = len(pluginconf)
+    _configure('driver', _discover('driver', basepath=basepath))
+    _configure('plugin', _discover('plugin', basepath=basepath))
+    config.validate_config()
     drivers = _loadtype('driver', basepath)
-    newp = _configure('plugin', _discover('plugin', basepath=basepath))
     plugins = _loadtype('plugin', basepath)
-    return newd or newp
+    return len(driverconf) != beforedrivers or len(pluginconf) != beforeplugins
