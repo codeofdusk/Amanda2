@@ -25,7 +25,7 @@ users or through newly-initialized drivers."""
 
 if __name__ == '__main__':
     # Prepare config
-    config.load()
+    config.load(validate=False)
     # Instantiate components
     if components.load():
         print(
