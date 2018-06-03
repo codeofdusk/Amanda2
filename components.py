@@ -1,8 +1,9 @@
 "Manages Amanda components (plugins and drivers)."
 
-import config
 import os
 import importlib
+import configobj
+import config
 
 plugins = []
 drivers = []
@@ -32,9 +33,50 @@ def _discover(type, basepath):
     return [_import(i) for i in t]
 
 
-def _loadtype(type, basepath):
+def _get_short_name(m):
+    "Returns the short name (filename without path, package, or extension) of an imported module. This name is used in the config and discovery systems to identify components."
+    return m.__name__.split(".")[-1]
+
+
+def _configure(type, discovered):
+    "Updates user configuration based on discovered components."
+    if type + "s" not in config.conf:
+        config.conf[type + "s"] = {}
+    for m in discovered:
+        head = '[' + type + 's]'
+        sectionname = '[[' + _get_short_name(m) + ']]'
+        if hasattr(m, 'configspec'):
+            cs = m.configspec
+        else:
+            # No config spec provided by the plugin maintainer, so use this default.
+            cs = (head, sectionname, 'enabled=boolean(default=False)')
+        if head not in cs:
+            cs = (head, *cs)
+        if sectionname not in cs:
+            cs = (sectionname, *cs)
+        spec = configobj.ConfigObj(cs, _inspec=True)
+        # Clean the config spec
+        typesec = spec[spec.sections[0]]
+        compsec = typesec[typesec.sections[0]]
+        if len(typesec) != 1 or len(compsec) != 1:
+            raise ValueError("Config spec for " + m.__name__ +
+                             " has wrong number of config sections (" +
+                             str(len(spec.sections)) +
+                             "). This may be a security concern!")
+        if 'enabled' not in compsec:
+            compsec['enabled'] = 'boolean(default=False)'
+        # All checks passed, so merge the component spec and user config spec.
+        config.conf.configspec.merge(spec)
+    # Store the length of the root type section so we know if there are any new components.
+    rootsection = config.conf[type + "s"]
+    before = len(rootsection)
+    config.validate_config()
+    return before != len(rootsection)
+
+
+def _loadtype(type, basepath, discovered=None):
     "An internal-use function to instantiate components of a given type."
-    # Get the list of discovered components.
+    # Get the list of configured components.
     c = config.conf[type + 's']
     disc = c.sections
     # Get the list of enabled components.
@@ -42,10 +84,10 @@ def _loadtype(type, basepath):
         i for i in disc
         if c[i].as_bool('enabled') and c[i] != 'Base' + type.capitalize()
     ]
-    # Get a list of paths
-    paths = [os.path.join(basepath, type + "s", i + ".py") for i in enabled]
-    # Import and instantiate
-    mods = map(_import, paths)
+    # Filter imported modules to only those containing enabled components.
+    if not discovered:
+        discovered = _discover(type, basepath)
+    mods = [m for m in discovered if _get_short_name(m) in enabled]
     res = []
     for mod in mods:
         b = None
@@ -55,10 +97,8 @@ def _loadtype(type, basepath):
                 break
         for name, obj in mod.__dict__.items():
             if hasattr(obj, "__bases__") and b in obj.__bases__:
-                # Instantiate the component, passing all config options (except
-                # enabled) as kwargs.
-                kwargs = dict(config.conf[type + 's'][os.path.splitext(
-                    os.path.basename(mod.__file__))[0]])
+                # Instantiate the component, passing config parameters (except enabled) as kwargs
+                kwargs = dict(config.conf[type + 's'][_get_short_name(mod)])
                 del kwargs['enabled']
                 inst = obj(**kwargs)
                 res.append(inst)
@@ -66,12 +106,12 @@ def _loadtype(type, basepath):
 
 
 def load(basepath=None):
-    "Instantiates plugins and drivers based on user configuration. If basepath is specified, that directory will be searched for components, otherwise the current directory will be searched. Returns the result of _discover for (True if new plugins, drivers, or both have been discovered)."
+    "Instantiates plugins and drivers based on user configuration. If basepath is specified, that directory will be searched for components, otherwise the current directory will be searched. Returns the result of _configure for (True if new plugins, drivers, or both have been discovered)."
     global plugins, drivers
     if basepath is None:
         basepath = ''
-    newd = _discover('driver', basepath=basepath)
+    newd = _configure('driver', _discover('driver', basepath=basepath))
     drivers = _loadtype('driver', basepath)
-    newp = _discover('plugin', basepath=basepath)
+    newp = _configure('plugin', _discover('plugin', basepath=basepath))
     plugins = _loadtype('plugin', basepath)
     return newd or newp
