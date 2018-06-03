@@ -7,7 +7,7 @@ from validate import Validator
 conf = None
 
 
-def load(path="amanda2.conf", specpath="config.spec",validate=True):
+def load(path="amanda2.conf", specpath="config.spec", validate=True):
     "Loads and validates user configuration. Populates the module-level conf variable for use in other parts of the program and does not return. If validate is True, call validate_config() when the config is loaded."
     global conf
     new = not os.path.exists(path)
@@ -21,10 +21,11 @@ def load(path="amanda2.conf", specpath="config.spec",validate=True):
             ". Please edit it for your use case and re-run Amanda when finished."
         )
 
+
 def validate_config():
     "Validates and writes back user configuration if available."
     global conf
-    if not conf:
+    if conf is None:
         print("Warning: config validation attempted before load")
         return
     val = Validator()
