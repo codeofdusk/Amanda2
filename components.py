@@ -58,11 +58,11 @@ def _configure(type, discovered):
         # Clean the config spec
         typesec = spec[spec.sections[0]]
         compsec = typesec[typesec.sections[0]]
-        if len(typesec) != 1 or len(compsec) != 1:
-            raise ValueError("Config spec for " + m.__name__ +
-                             " has wrong number of config sections (" +
-                             str(len(spec.sections)) +
-                             "). This may be a security concern!")
+        if len(spec.sections) != 1 or len(typesec) != 1:
+            raise ValueError(
+                "Config spec for " + m.__name__ +
+                " has wrong number of config sections. This may be a security concern!"
+            )
         # Always supply enabled and set to False to prevent components from overriding.
         compsec['enabled'] = 'boolean(default=False)'
         # All checks passed, so merge the component spec and user config spec.
