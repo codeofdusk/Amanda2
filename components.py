@@ -63,8 +63,8 @@ def _configure(type, discovered):
                              " has wrong number of config sections (" +
                              str(len(spec.sections)) +
                              "). This may be a security concern!")
-        if 'enabled' not in compsec:
-            compsec['enabled'] = 'boolean(default=False)'
+        # Always supply enabled and set to False to prevent components from overriding.
+        compsec['enabled'] = 'boolean(default=False)'
         # All checks passed, so merge the component spec and user config spec.
         config.conf.configspec.merge(spec)
     # Store the length of the root type section so we know if there are any new components.
