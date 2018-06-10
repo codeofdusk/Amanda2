@@ -15,15 +15,16 @@ class WolframAlphaPlugin(BasePlugin):
     def run(self, command, explicit=False, *args, **kwargs):
         "Send a query to Wolfram Alpha."
         q = self.client.query(command, units="metric")
-        #Check for invalid input.
+        # Check for invalid input.
         if not hasattr(q, 'pods'):
             return False
-        #response string
+        # response string
         resp = ""
-        #Filter Wolfram results and populate response string.
+        # Filter Wolfram results and populate response string.
         for pod in q.pods:
-            if explicit or ("input" not in pod.title.lower()
-                            and pod.text != None):
+            if explicit or (hasattr(pod, 'title')
+                            and "input" not in pod.title.lower()
+                            and hasattr(pod, 'text') and pod.text is not None):
                 if explicit or (pod.title.lower() != "result"
                                 and pod.title.lower() != "response"):
                     resp += str(pod.title) + "\n"
