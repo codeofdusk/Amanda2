@@ -13,7 +13,6 @@ class SkypeDriver(BaseDriver, skpy.SkypeEventLoop):
                  window=None):
         "Initialize the user-facing Skype driver."
         if window:
-            # We have a window
             self.window = window
             if status == "default":
                 status = None
@@ -21,6 +20,10 @@ class SkypeDriver(BaseDriver, skpy.SkypeEventLoop):
             self.window = None
             if status == "default":
                 status = skpy.util.SkypeUtils.Status.Online
+        if status == "online":
+            status = skpy.util.SkypeUtils.Status.Online
+        elif status == "offline":
+            status = skpy.util.SkypeUtils.Status.Offline
         super().__init__(
             user=user,
             pwd=pwd,
