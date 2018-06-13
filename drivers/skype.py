@@ -2,6 +2,26 @@ import skpy
 from request import request
 from drivers.BaseDriver import BaseDriver
 
+configspec = (
+    '[drivers]', '# Skype',
+    '# This driver adds support for Skype. It requires skpy from PyPI and a Skype account for sending and receiving messages with users.',
+    '[[skype]]', 'enabled = boolean(default = False)',
+    '# The Skype username that Amanda should use.',
+    'user=string(default=\'\')', '# The Skype user\'s password.',
+    'pwd=string(default=\'\')',
+    '# If you wish to use skpy\'s credential caching features, specify the tokenfile to use.',
+    '# You probably don\'t need to do this unless you are having authentication issues.',
+    'tokenFile=string(default=\'\')',
+    '# Should this driver automatically acknowledge all incoming Skype events?',
+    '# Note: you probably want to leave this enabled unless another client shares this account with Amanda.',
+    'autoAck = boolean(default=True)',
+    '# What status should Amanda present to other clients?',
+    '# The default is to present as online unless a window is set, otherwise present as offline.',
+    '# If you wish to always present as online or offline, set this option to online or offline.',
+    'status = option(\'default\',\'offline\',\'online\',default=\'default\')',
+    '# If this driver should only respond to messages from a certain Skype group chat, enter the cloud identifier of that chat here.',
+    'window=string(default=\'\')')
+
 
 class SkypeDriver(BaseDriver, skpy.SkypeEventLoop):
     def __init__(self,
@@ -12,6 +32,8 @@ class SkypeDriver(BaseDriver, skpy.SkypeEventLoop):
                  status="default",
                  window=None):
         "Initialize the user-facing Skype driver."
+        if tokenFile == '':
+            tokenFile = None
         if window:
             self.window = window
             if status == "default":
