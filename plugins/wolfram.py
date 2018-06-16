@@ -12,9 +12,9 @@ class WolframAlphaPlugin(BasePlugin):
     name = "wolfram"
     ad = "Type a question mark followed by a query to send to Wolfram Alpha, or !wolfram <query> to send a request and see what Wolfram Alpha thought you said."
 
-    def run(self, command, explicit=False, *args, **kwargs):
+    def run(self, r):
         "Send a query to Wolfram Alpha."
-        q = self.client.query(command, units="metric")
+        q = self.client.query(r.content, units="metric")
         # Check for invalid input.
         if not hasattr(q, 'pods'):
             return False
@@ -22,10 +22,10 @@ class WolframAlphaPlugin(BasePlugin):
         resp = ""
         # Filter Wolfram results and populate response string.
         for pod in q.pods:
-            if explicit or (hasattr(pod, 'title')
+            if r.explicit or (hasattr(pod, 'title')
                             and "input" not in pod.title.lower()
                             and hasattr(pod, 'text') and pod.text is not None):
-                if explicit or (pod.title.lower() != "result"
+                if r.explicit or (pod.title.lower() != "result"
                                 and pod.title.lower() != "response"):
                     resp += str(pod.title) + "\n"
                 resp += str(pod.text) + "\n"

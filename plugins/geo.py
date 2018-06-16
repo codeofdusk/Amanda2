@@ -40,7 +40,7 @@ class GeoPlugin(BasePlugin):
         else:
             return res
 
-    def run(self, s, *args, **kwargs):
-        if len(s) <= 1:
+    def run(self, r):
+        if len(r.content) <= 1:
             return "Usage: !geo <hostname or IP>"
-        return self.as_string(self.lookup(s))
+        return self.as_string(self.lookup(r.content))

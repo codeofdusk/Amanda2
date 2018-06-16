@@ -7,37 +7,41 @@ import config
 class request(object):
     "Contains attributes for handling user requests and returning responses. Instantiate this class to make a request."
 
-    def __init__(self, content, driver=None, *args, **kwargs):
+    def __init__(self, message, driver=None, *args, **kwargs):
         "Take a string and return a response (if available) or False for no response."
-        self.content = content
+        self._message = message
         self.driver = driver
         self.accepted = False
         self.response = None
+        self.content = None
+        self.explicit = None
         # Expose extra args
         self.args = args
         self.kwargs = kwargs
         try:
             # First attempt to call plugin explicitly
-            if config.conf['advanced']['allow_explicit'] and self.content.startswith(
+            if config.conf['advanced']['allow_explicit'] and self._message.startswith(
                     "!"):
+                self.explicit = True
                 self.accept()
                 # Get the plugin name and args
-                qt = self.content[1:].split(" ")
+                qt = self._message[1:].split(" ")
                 pn = qt[0]
-                pa = ' '.join(qt[1:])
+                self.content = ' '.join(qt[1:])
                 # Search for the plugin
                 for plugin in components.plugins:
                     if hasattr(plugin,
                                'name') and plugin.name.lower() == pn.lower():
-                        self.response = plugin.run(pa, explicit=True)
+                        self.response = plugin.run(self)
             # Attempt to call plugin implicitly
             if config.conf['advanced']['allow_implicit']:
                 for plugin in components.plugins:
                     if hasattr(plugin, 'match'):
-                        m = plugin.match(self.content)
-                        if m:
+                        self.content = plugin.match(self._message)
+                        if self.content:
+                            self.explicit = False
                             self.accept()
-                            self.response = plugin.run(m)
+                            self.response = plugin.run(self)
         except BaseException:
             import traceback
             self.response = traceback.format_exc()
