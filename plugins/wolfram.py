@@ -9,7 +9,7 @@ configspec = (
 
 
 class WolframAlphaPlugin(BasePlugin):
-    name = "wolfram"
+    invocations = ("wolfram", )
     ad = "Type a question mark followed by a query to send to Wolfram Alpha, or !wolfram <query> to send a request and see what Wolfram Alpha thought you said."
 
     def run(self, r):
@@ -22,11 +22,12 @@ class WolframAlphaPlugin(BasePlugin):
         resp = ""
         # Filter Wolfram results and populate response string.
         for pod in q.pods:
-            if r.explicit or (hasattr(pod, 'title')
-                            and "input" not in pod.title.lower()
-                            and hasattr(pod, 'text') and pod.text is not None):
-                if r.explicit or (pod.title.lower() != "result"
-                                and pod.title.lower() != "response"):
+            if r.invocation is not None or (
+                    hasattr(pod, 'title') and "input" not in pod.title.lower()
+                    and hasattr(pod, 'text') and pod.text is not None):
+                if r.invocation is not None or (
+                        pod.title.lower() != "result"
+                        and pod.title.lower() != "response"):
                     resp += str(pod.title) + "\n"
                 resp += str(pod.text) + "\n"
         return resp

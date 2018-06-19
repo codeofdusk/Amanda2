@@ -14,7 +14,7 @@ class request(object):
         self.accepted = False
         self.response = None
         self.content = None
-        self.explicit = None
+        self.invocation = None
         # Expose extra args
         self.args = args
         self.kwargs = kwargs
@@ -22,7 +22,6 @@ class request(object):
             # First attempt to call plugin explicitly
             if config.conf['advanced']['allow_explicit'] and self._message.startswith(
                     "!"):
-                self.explicit = True
                 self.accept()
                 # Get the plugin name and args
                 qt = self._message[1:].split(" ")
@@ -30,16 +29,19 @@ class request(object):
                 self.content = ' '.join(qt[1:])
                 # Search for the plugin
                 for plugin in components.plugins:
-                    if hasattr(plugin,
-                               'name') and plugin.name.lower() == pn.lower():
-                        self.response = plugin.run(self)
+                    try:
+                        if pn.lower() in plugin.invocations:
+                            self.invocation = pn
+                            self.response = plugin.run(self)
+                    except AttributeError:
+                        continue
             # Attempt to call plugin implicitly
-            if config.conf['advanced']['allow_implicit'] and not self._message.startswith("!"):
+            if config.conf['advanced']['allow_implicit'] and not self._message.startswith(
+                    "!"):
                 for plugin in components.plugins:
                     if hasattr(plugin, 'match'):
                         self.content = plugin.match(self._message)
                         if self.content:
-                            self.explicit = False
                             self.accept()
                             self.response = plugin.run(self)
         except BaseException:

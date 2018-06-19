@@ -2,17 +2,15 @@ from plugins.BasePlugin import BasePlugin
 import requests
 import json
 
-configspec=(
+configspec = (
     "# Geo",
     "# This plugin geolocates hostnames and IP addresses using the freegeoip.net API.",
-    "# The requests package from PyPI is required.",
-    "[[geo]]",
-    "enabled=boolean(default=False)"
-    )
+    "# The requests package from PyPI is required.", "[[geo]]",
+    "enabled=boolean(default=False)")
 
 
 class GeoPlugin(BasePlugin):
-    name = "geo"
+    invocations = ("geo", )
     ad = "Type !geo <hostname or IP address> to geolocate a host using the freegeoip.net API."
 
     def lookup(self, ip=""):
