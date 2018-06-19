@@ -34,7 +34,7 @@ class request(object):
                                'name') and plugin.name.lower() == pn.lower():
                         self.response = plugin.run(self)
             # Attempt to call plugin implicitly
-            if config.conf['advanced']['allow_implicit']:
+            if config.conf['advanced']['allow_implicit'] and not self._message.startswith("!"):
                 for plugin in components.plugins:
                     if hasattr(plugin, 'match'):
                         self.content = plugin.match(self._message)
