@@ -22,5 +22,5 @@ if __name__ == '__main__':
         if SS is not None:
             try:
                 driver.announce(SS)
-            except AttributeError, NotImplementedError:
+            except (AttributeError, NotImplementedError):
                 continue

@@ -41,7 +41,7 @@ class request(object):
                 for plugin in components.plugins:
                     try:
                         self.content = plugin.match(self._message)
-                    except AttributeError, NotImplementedError:
+                    except (AttributeError, NotImplementedError):
                         continue
                     else:
                         if self.content:
@@ -66,7 +66,7 @@ class request(object):
     def accept(self):
         try:
             self.driver.working(True, request=self)
-        except AttributeError, NotImplementedError:
+        except (AttributeError, NotImplementedError):
             pass
         self.accepted = True
 
@@ -74,9 +74,9 @@ class request(object):
         if self.accepted:
             try:
                 self.driver.say(str(self), request=self)
-            except AttributeError, NotImplementedError:
+            except (AttributeError, NotImplementedError):
                 pass
             try:
                 self.driver.working(False, request=self)
-            except AttributeError, NotImplementedError:
+            except (AttributeError, NotImplementedError):
                 pass
