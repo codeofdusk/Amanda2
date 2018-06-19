@@ -18,8 +18,10 @@ users or through newly-initialized drivers."""
     # Advertise enabled plugins
     if config.conf['general']['sendmotd'] == 'full':
         for plugin in components.plugins:
-            if hasattr(plugin, 'ad'):
+            try:
                 startstr += " " + plugin.ad
+            except AttributeError:
+                continue
     return startstr
 
 
@@ -38,5 +40,8 @@ if __name__ == '__main__':
     SS = build_startup_message()
     for driver in components.drivers:
         Thread(target=driver.run).start()
-        if hasattr(driver, 'announce') and SS is not None:
-            driver.announce(SS)
+        if SS is not None:
+            try:
+                driver.announce(SS)
+            except AttributeError, NotImplementedError:
+                continue

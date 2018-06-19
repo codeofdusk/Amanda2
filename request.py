@@ -39,8 +39,11 @@ class request(object):
             if config.conf['advanced']['allow_implicit'] and not self._message.startswith(
                     "!"):
                 for plugin in components.plugins:
-                    if hasattr(plugin, 'match'):
+                    try:
                         self.content = plugin.match(self._message)
+                    except AttributeError, NotImplementedError:
+                        continue
+                    else:
                         if self.content:
                             self.accept()
                             self.response = plugin.run(self)
@@ -61,13 +64,19 @@ class request(object):
         return self.response
 
     def accept(self):
-        if hasattr(self.driver, 'working'):
+        try:
             self.driver.working(True, request=self)
+        except AttributeError, NotImplementedError:
+            pass
         self.accepted = True
 
     def finalize(self):
         if self.accepted:
-            if hasattr(self.driver, 'say'):
+            try:
                 self.driver.say(str(self), request=self)
-            if hasattr(self.driver, 'working'):
+            except AttributeError, NotImplementedError:
+                pass
+            try:
                 self.driver.working(False, request=self)
+            except AttributeError, NotImplementedError:
+                pass
