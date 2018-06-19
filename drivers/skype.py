@@ -1,7 +1,7 @@
 import skpy
 from request import request
 from drivers.BaseDriver import BaseDriver
-import utils
+
 
 configspec = (
     '[drivers]', '# Skype',
@@ -24,7 +24,7 @@ configspec = (
     'window=string(default=\'\')')
 
 
-class SkypeDriver(BaseDriver, skpy.SkypeEventLoop):
+class SkypeDriver(skpy.SkypeEventLoop, BaseDriver):
     def __init__(self,
                  user=None,
                  pwd=None,

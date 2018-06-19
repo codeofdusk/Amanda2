@@ -23,3 +23,19 @@ users or through newly-initialized drivers."""
             except AttributeError:
                 continue
     return startstr
+
+
+def saypager(n):
+    """A decorator to split large messages into pages of n characters, for drivers with maximum character limits. May be useful for future drivers/contributors.
+        Use it by decorating your say method like:
+        @saypager(n)
+        where n is the maximum message size for your protocol."""
+
+    def decorator(say):
+        def f(self, msg, request=None, *args, **kwargs):
+            for i in range(0, len(msg), n):
+                say(self, msg=msg[i:i + n], request=request, *args, **kwargs)
+
+        return f
+
+    return decorator
