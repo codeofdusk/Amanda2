@@ -15,14 +15,21 @@ users or through newly-initialized drivers."""
         startstr = config.conf['general']['motd']
     else:
         startstr = "I am completely operational, and all my circuits are functioning perfectly!"
-    # Advertise enabled plugins
+    # Advertise enabled plugins if needed
     if config.conf['general']['sendmotd'] == 'full':
-        for plugin in components.plugins:
-            try:
-                startstr += " " + plugin.ad
-            except AttributeError:
-                continue
+        startstr += build_plugin_ad()
     return startstr
+
+
+def build_plugin_ad():
+    "Advertise enabled plugins for use in help texts and motd."
+    res = ""
+    for plugin in components.plugins:
+        try:
+            res += " " + plugin.ad
+        except AttributeError:
+            continue
+    return res
 
 
 def saypager(n):
