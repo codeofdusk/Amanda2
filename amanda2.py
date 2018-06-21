@@ -17,7 +17,8 @@ if __name__ == '__main__':
         raise ValueError("You must configure at least one driver.")
     for driver in components.drivers:
         Thread(target=driver.run).start()
-        ss=utils.build_startup_message(short=getattr(driver,'short_announcements',False))
+        short = config.conf['general']['sendmotd'] == 'retracted' or getattr(driver,'short_announcements',False)
+        ss=utils.build_startup_message(short=short)
         if ss is not None:
             try:
                 driver.announce(ss)

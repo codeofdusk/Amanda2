@@ -32,7 +32,7 @@ class request(object):
                 # Note: if we need to implement another special command like this that's a core function, we should create a CorePlugin object that's always loaded and not part of the config that contains these commands.
                 try:
                     sendmotd = config.conf['general']['sendmotd']
-                    if sendmotd == 'full' and self.driver.short_announcements and self.invocation == "help":
+                    if (sendmotd == 'full' or sendmotd == 'retracted') and (sendmotd == 'retracted' or self.driver.short_announcements) and self.invocation == "help":
                         self.response = utils.build_plugin_ad()
                 except AttributeError:
                     pass
