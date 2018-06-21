@@ -14,6 +14,8 @@ class WolframAlphaPlugin(BasePlugin):
 
     def run(self, r):
         "Send a query to Wolfram Alpha."
+        if not r.content:
+            return self.ad
         q = self.client.query(r.content, units="metric")
         # Check for invalid input.
         if not hasattr(q, 'pods'):
