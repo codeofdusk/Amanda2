@@ -25,13 +25,12 @@ class request(object):
                 self.accept()
                 # Get the plugin name and args
                 qt = self._message[1:].split(" ")
-                pn = qt[0]
+                self.invocation = qt[0]
                 self.content = ' '.join(qt[1:])
                 # Search for the plugin
                 for plugin in components.plugins:
                     try:
-                        if pn.lower() in plugin.invocations:
-                            self.invocation = pn
+                        if self.invocation.lower() in plugin.invocations:
                             self.response = plugin.run(self)
                     except AttributeError:
                         continue
