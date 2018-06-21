@@ -2,6 +2,7 @@
 import random
 import components
 import config
+import utils
 
 
 class request(object):
@@ -27,6 +28,14 @@ class request(object):
                 qt = self._message[1:].split(" ")
                 self.invocation = qt[0]
                 self.content = ' '.join(qt[1:])
+                # Is the user requesting the full motd?
+                # Note: if we need to implement another special command like this that's a core function, we should create a CorePlugin object that's always loaded and not part of the config that contains these commands.
+                try:
+                    sendmotd = config.conf['general']['sendmotd']
+                    if sendmotd == 'full' and self.driver.short_announcements and self.invocation == "help":
+                        self.response = utils.build_plugin_ad()
+                except AttributeError:
+                    pass
                 # Search for the plugin
                 for plugin in components.plugins:
                     try:

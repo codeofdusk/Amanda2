@@ -2,7 +2,6 @@ import skpy
 from request import request
 from drivers.BaseDriver import BaseDriver
 
-
 configspec = (
     '[drivers]', '# Skype',
     '# This driver adds support for Skype. It requires skpy from PyPI and a Skype account for sending and receiving messages with users.',
@@ -85,3 +84,8 @@ class SkypeDriver(skpy.SkypeEventLoop, BaseDriver):
 
     def run(self):
         return self.loop()
+
+    @property
+    def short_announcements(self):
+        "Due to Skype mood text character limits, we can only support short announcements if no window is set."
+        return not self.window

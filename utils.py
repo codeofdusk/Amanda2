@@ -4,9 +4,10 @@ import config
 import components
 
 
-def build_startup_message():
+def build_startup_message(short=False):
     """Build the startup string, an announcement sent to newly-connected
-users or through newly-initialized drivers."""
+users or through newly-initialized drivers.
+The short parameter controls if full plugin advertisements are sent as part of the message based on driver support."""
     # Is the message enabled?
     if not config.conf['general']['sendmotd']:
         return None
@@ -16,8 +17,10 @@ users or through newly-initialized drivers."""
     else:
         startstr = "I am completely operational, and all my circuits are functioning perfectly!"
     # Advertise enabled plugins if needed
-    if config.conf['general']['sendmotd'] == 'full':
+    if config.conf['general']['sendmotd'] == 'full' and not short:
         startstr += build_plugin_ad()
+    elif short:
+        startstr+=" Send !help (an exclamation point followed by the word help) for a complete list of my features!"
     return startstr
 
 

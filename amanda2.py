@@ -15,12 +15,11 @@ if __name__ == '__main__':
     # Start all drivers
     if not hasattr(components, 'drivers') or len(components.drivers) < 1:
         raise ValueError("You must configure at least one driver.")
-    # Build the startup string
-    SS = utils.build_startup_message()
     for driver in components.drivers:
         Thread(target=driver.run).start()
-        if SS is not None:
+        ss=utils.build_startup_message(short=getattr(driver,'short_announcements',False))
+        if ss is not None:
             try:
-                driver.announce(SS)
+                driver.announce(ss)
             except (AttributeError, NotImplementedError):
                 continue
