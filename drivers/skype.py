@@ -1,4 +1,5 @@
 import skpy
+import config
 from request import request
 from drivers.BaseDriver import BaseDriver
 
@@ -20,6 +21,7 @@ configspec = (
     '# If you wish to always present as online or offline, set this option to online or offline.',
     'status = option(\'default\',\'offline\',\'online\',default=\'default\')',
     '# If this driver should only respond to messages from a certain Skype group chat, enter the cloud identifier of that chat here.',
+    '# If you do not know the identifier of the chat you wish to use, set this option to "discover".',
     'window=string(default=\'\')')
 
 
@@ -34,6 +36,14 @@ class SkypeDriver(skpy.SkypeEventLoop, BaseDriver):
         "Initialize the user-facing Skype driver."
         if tokenFile == '':
             tokenFile = None
+        if window == "discover":
+            print(
+                "Window discovery mode active. Wait a few seconds, then add me to the chat you wish to use and send a message there."
+            )
+            window = None
+            self.discover = True
+        else:
+            self.discover = False
         if window:
             self.window = window
             if status == "default":
@@ -58,6 +68,15 @@ class SkypeDriver(skpy.SkypeEventLoop, BaseDriver):
                 not self.window or event.msg.chat.id == self.window):
             # Get the message
             q = str(event.msg.content)
+            if self.discover:
+                self.window = event.msg.chat.id
+                self.discover = False
+                config.conf['drivers']['skype']['window'] = event.msg.chat.id
+                config.conf.write()
+                self.announce(
+                    "Window found! This window's ID is " + event.msg.chat.id +
+                    " (written to config). If this is not the correct window, set the window setting in the config back to \"discover\" and try again."
+                )
             request(q, driver=self, event=event)
 
     # Implement the Amanda driver interface.
