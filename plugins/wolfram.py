@@ -1,3 +1,7 @@
+"""Contains a plugin for retrieving results from the Wolfram Alpha knowledge engine using the wolframalpha package.
+Copyright 2018 - Bill Dengler <codeofdusk@gmail.com>. Licensed under MIT."""
+
+
 from plugins.BasePlugin import BasePlugin
 import wolframalpha
 

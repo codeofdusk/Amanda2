@@ -1,4 +1,5 @@
-"Contains the Request class."
+"""Contains the Request class.
+Copyright 2018 - Bill Dengler <codeofdusk@gmail.com>. Licensed under MIT."""
 import random
 import components
 import config

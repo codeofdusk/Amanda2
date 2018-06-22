@@ -1,4 +1,5 @@
-"Manages Amanda components (plugins and drivers)."
+"""Manages Amanda components (plugins and drivers).
+Copyright 2018 - Bill Dengler <codeofdusk@gmail.com>. Licensed under MIT."""
 
 import os
 import importlib

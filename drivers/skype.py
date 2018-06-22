@@ -1,3 +1,7 @@
+"""Contains an Amanda driver for interfacing with Skype, using the skpy package.
+Copyright 2018 - Bill Dengler <codeofdusk@gmail.com>. Licensed under MIT."""
+
+
 import skpy
 import config
 from request import request

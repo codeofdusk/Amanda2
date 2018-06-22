@@ -1,10 +1,12 @@
-"Amanda's main module and the entry point for the program."
+"""Amanda's main module and the entry point for the program.
+Copyright 2018 - Bill Dengler <codeofdusk@gmail.com>. Licensed under MIT."""
 from threading import Thread
 import components
 import config
 import utils
 
 if __name__ == '__main__':
+    print("Amanda: a simple, extensible chatbot framework.\nCopyright 2018 - Bill Dengler <codeofdusk@gmail.com>. Licensed under MIT.")
     # Prepare config
     config.load()
     # Instantiate components

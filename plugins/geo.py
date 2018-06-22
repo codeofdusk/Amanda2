@@ -1,3 +1,7 @@
+"""Contains an interface to the freegeoip.net API.
+Copyright 2018 - Bill Dengler <codeofdusk@gmail.com>. Licensed under MIT."""
+
+
 from plugins.BasePlugin import BasePlugin
 import requests
 import json

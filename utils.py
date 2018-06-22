@@ -1,4 +1,5 @@
-"Module containing utility functions that don't belong anywhere else."
+"""Module containing utility functions that don't belong anywhere else.
+Copyright 2018 - Bill Dengler. Licensed under MIT."""
 
 import config
 import components

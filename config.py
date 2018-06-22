@@ -1,4 +1,5 @@
-"An internal module for managing config files."
+"""An internal module for managing config files.
+Copyright 2018 - Bill Dengler <codeofdusk@gmail.com>. Licensed under MIT."""
 
 import os
 import configobj
