@@ -38,3 +38,8 @@ allow_explicit = boolean(default=True)
 # Implicit plugin use
 # Set the following option to False to disable the ability to call plugins implicitly (using custom match patterns). Disabling this feature may be useful in special circumstances but it should generally be left enabled.
 allow_implicit = boolean(default=True)
+# Message file
+# if enabled, Amanda will periodically check if the specified file exists. If so, it will send its contents over all drivers and delete the file.
+# This is useful for sending messages from external scripts or applications.
+# This feature is experimental and unsupported under Windows.
+message_file = string(default=None)
