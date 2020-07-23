@@ -76,7 +76,7 @@ class SkypeDriver(skpy.SkypeEventLoop, BaseDriver):
         )
 
     def onEvent(self, event):
-        if isinstance(event, skpy.SkypeNewMessageEvent) and (
+        if isinstance(event, skpy.SkypeMessageEvent) and (
             not self.window or event.msg.chat.id == self.window
         ):
             # Get the message
