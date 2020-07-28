@@ -1,13 +1,31 @@
 """Amanda's main module and the entry point for the program.
-Copyright 2018 - Bill Dengler <codeofdusk@gmail.com>. Licensed under MIT."""
+Copyright 2018–2020 Bill Dengler <codeofdusk@gmail.com>. Licensed under MIT."""
+
+import atexit
+import os
+
 from threading import Thread
 import components
 import config
 import utils
 
+
+def cleanup():
+    try:
+        os.remove("amanda.pid")
+    except FileNotFoundError:
+        pass
+
+
 if __name__ == "__main__":
+    if os.path.exists("amanda.pid"):
+        raise Exception("Amanda is already running!")
+    else:
+        with open("amanda.pid", "w") as pidfile:
+            pidfile.write(str(os.getpid()))
+        atexit.register(cleanup)
     print(
-        "Amanda: a simple, extensible chatbot framework.\nCopyright 2018 - Bill Dengler <codeofdusk@gmail.com>. Licensed under MIT."
+        "Amanda: a simple, extensible chatbot framework.\nCopyright 2018–2020 Bill Dengler <codeofdusk@gmail.com>. Licensed under MIT."
     )
 
     # Prepare config
@@ -22,7 +40,7 @@ if __name__ == "__main__":
     # Start all drivers
     threads = []
     if not hasattr(components, "drivers") or len(components.drivers) < 1:
-        raise ValueError("You must configure at least one driver.")
+        raise Exception("You must configure at least one driver.")
     for driver in components.drivers:
         tr = Thread(target=driver.run)
         threads.append(tr)
