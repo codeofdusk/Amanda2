@@ -23,8 +23,9 @@ if __name__ == "__main__":
             pid = int(pidfile.read())
             try:
                 os.kill(pid, 0)
-            except OSError:
                 raise Exception("Amanda is already running!")
+            except OSError:  # Process doesn't exist
+                pass
     with open("amanda.pid", "w") as pidfile:
         pidfile.write(str(os.getpid()))
     atexit.register(cleanup)
