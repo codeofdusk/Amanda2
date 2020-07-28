@@ -19,11 +19,15 @@ def cleanup():
 
 if __name__ == "__main__":
     if os.path.exists("amanda.pid"):
-        raise Exception("Amanda is already running!")
-    else:
-        with open("amanda.pid", "w") as pidfile:
-            pidfile.write(str(os.getpid()))
-        atexit.register(cleanup)
+        with open("amanda.pid") as pidfile:
+            pid = int(pidfile.read())
+            try:
+                os.kill(pid, 0)
+            except OSError:
+                raise Exception("Amanda is already running!")
+    with open("amanda.pid", "w") as pidfile:
+        pidfile.write(str(os.getpid()))
+    atexit.register(cleanup)
     print(
         "Amanda: a simple, extensible chatbot framework.\nCopyright 2018–2020 Bill Dengler <codeofdusk@gmail.com>. Licensed under MIT."
     )
