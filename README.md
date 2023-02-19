@@ -1,4 +1,6 @@
 # Amanda
+**Note: This project is no longer under active development! The Skype driver hasn't been tested in years and may no longer be functional.**
+
 Amanda is a simple, extensible chatbot framework written in Python. At the moment, it supports the retrieval of responses from [Wolfram Alpha](http://wolframalpha.com) and the [freegeoip.net](http://freegeoip.net) API for Skype users, but new features and protocol support can be added easily in the form of plugins and drivers respectively.
 
 ## Usage
